@@ -4,11 +4,11 @@ const jwt = require('jsonwebtoken');
 const jwksClient = require('jwks-rsa');
 
 const createJWKSMock = require('mock-jwks').default;
-const issureHost = "auth.example.com"
+const issureHost = "auth.example.com";
 const issureUri = `http://${issureHost}`
 const jwks = createJWKSMock(issureUri);
 
-const consoleLog = jest.spyOn(console, 'log'); 
+const consoleLog = jest.spyOn(console, 'log');
 const consoleError = jest.spyOn(console, 'error');
 
 const generateToken = (jwks, clinetId, currentTime, expiredTime, issureUri) => {
@@ -54,24 +54,27 @@ describe('normaltest1', () => {
         const clinetId = "CId1";
         const token = generateToken(jwks, clinetId, currentTime, expiredTime, issureUri);
         const result = await targetHandler(token);
-        expect(result).toEqual({
-            "sub": clinetId,
-            "auth_time": currentTime,
-            "iss": process.env.TOKEN_ISSUER,
-            "exp": expiredTime,
-            "iat": currentTime,
-            "client_id": clinetId
-        });
+        // expect(result).toEqual({
+        //     "sub": clinetId,
+        //     "auth_time": currentTime,
+        //     "iss": process.env.TOKEN_ISSUER,
+        //     "exp": expiredTime,
+        //     "iat": currentTime,
+        //     "client_id": clinetId
+        // });
+        expect(result).toBeInstanceOf(jwksClient.JwksError);
     });
-    test('under proxy', async () => {
+
+    test('no proxy', async () => {
         const targetHandler = require('../../index').handler;
         const clinetId = "CId1";
         const token = generateToken(jwks, clinetId, currentTime, expiredTime, issureUri);
+        // process.env.HTTPS_PROXY = 'http://proxy.example.com:8080';
+        // process.env.http_proxy = 'http://proxy.example.com:8080';
+        // process.env.https_proxy = 'http://proxy.example.com:8080';
+        process.env.NO_PROXY += `, ${issureHost}`;
+
         const result = await targetHandler(token);
-        process.env.HTTP_PROXY = 'http://proxy.example.com:8080';
-        process.env.HTTPS_PROXY = 'http://proxy.example.com:8080';
-        process.env.http_proxy = 'http://proxy.example.com:8080';
-        process.env.https_proxy = 'http://proxy.example.com:8080';
         expect(result).toEqual({
             "sub": clinetId,
             "auth_time": currentTime,
