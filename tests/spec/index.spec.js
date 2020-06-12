@@ -44,7 +44,8 @@ describe('normaltest1', () => {
     beforeEach(async () => {
         process.env.JWKS_URI = `${issureUri}/.well-known/jwks.json`;
         process.env.TOKEN_ISSUER = issureUri;
-        process.env.HTTP_PROXY = 'http://proxy.example.com'; // proxy emulate
+
+        if(!process.env.HTTP_PROXY) process.env.HTTP_PROXY = 'http://proxy.example.com'; // proxy emulate
     });
 
     // afterEach(async () => {
