@@ -26,6 +26,7 @@ exports.handler = async (token) => {
         const tokenPayload = await verifyToken(token);
         return tokenPayload
     } catch (err) {
+        console.error(err);
         return err;
     }
 }

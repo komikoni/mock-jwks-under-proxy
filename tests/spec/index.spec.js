@@ -5,7 +5,7 @@ const jwksClient = require('jwks-rsa');
 
 const createJWKSMock = require('mock-jwks').default;
 const issureHost = "auth.example.com"
-const issureUri = `https://${issureHost}`
+const issureUri = `http://${issureHost}`
 const jwks = createJWKSMock(issureUri);
 
 const consoleLog = jest.spyOn(console, 'log'); 
