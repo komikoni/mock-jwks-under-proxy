@@ -44,34 +44,25 @@ describe('normaltest1', () => {
     beforeEach(async () => {
         process.env.JWKS_URI = `${issureUri}/.well-known/jwks.json`;
         process.env.TOKEN_ISSUER = issureUri;
+        process.env.HTTP_PROXY = 'http://proxy.example.com'; // proxy emulate
     });
 
     // afterEach(async () => {
     // });
 
-    test('not under proxy', async () => {
+    test('[case1] under the proxy without NO_PROXY', async () => {
         const targetHandler = require('../../index').handler;
         const clinetId = "CId1";
         const token = generateToken(jwks, clinetId, currentTime, expiredTime, issureUri);
         const result = await targetHandler(token);
-        // expect(result).toEqual({
-        //     "sub": clinetId,
-        //     "auth_time": currentTime,
-        //     "iss": process.env.TOKEN_ISSUER,
-        //     "exp": expiredTime,
-        //     "iat": currentTime,
-        //     "client_id": clinetId
-        // });
-        expect(result).toBeInstanceOf(jwksClient.JwksError);
+
+        expect(result).toBe("Error");
     });
 
-    test('no proxy', async () => {
+    test('[case2] under the proxy with NO_PROXY', async () => {
         const targetHandler = require('../../index').handler;
         const clinetId = "CId1";
         const token = generateToken(jwks, clinetId, currentTime, expiredTime, issureUri);
-        // process.env.HTTPS_PROXY = 'http://proxy.example.com:8080';
-        // process.env.http_proxy = 'http://proxy.example.com:8080';
-        // process.env.https_proxy = 'http://proxy.example.com:8080';
         process.env.NO_PROXY += `, ${issureHost}`;
 
         const result = await targetHandler(token);

@@ -27,6 +27,6 @@ exports.handler = async (token) => {
         return tokenPayload
     } catch (err) {
         console.error(err);
-        return err;
+        return "Error";
     }
 }
